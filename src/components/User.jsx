@@ -1,46 +1,31 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
-import { useState } from "react";
 import { deleteUser } from "../apis/userApis";
-import Dialog from "./Dialog";
+import useConfirmation from "../hooks/useConfirmation";
 
 const User = ({ name, bio, image, age }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [confirm, confirmationDialog] = useConfirmation();
 
-  const handleClose = () => setIsOpen(false);
-  const handleDialogCancel = () => setIsOpen(false);
   const handleDelete = () => {
-    deleteUser(name).then(() => {
-      alert("User deleted");
-      setIsOpen(false);
-    });
+    confirm(() =>
+      deleteUser(name).then(() => {
+        alert("User deleted");
+      })
+    );
   };
 
   return (
     <>
-      <Dialog
-        open={isOpen}
-        onClose={handleClose}
-        title="Confirmation Required"
-        body="Do you really want to delete this user"
-        actions={
-          <>
-            <Button onClick={handleDialogCancel}>Cancel</Button>
-            <Button onClick={handleDelete}>Yes</Button>
-          </>
-        }
-      ></Dialog>
-
+      {confirmationDialog}
       <ListItem
         alignItems="flex-start"
         secondaryAction={
           <IconButton>
-            <DeleteIcon onClick={() => setIsOpen(true)} />
+            <DeleteIcon onClick={handleDelete} />
           </IconButton>
         }
       >
